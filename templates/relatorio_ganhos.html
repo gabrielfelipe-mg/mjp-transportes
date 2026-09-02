@@ -1,0 +1,45 @@
+{% extends "padrao.html" %}
+
+{% block conteudo %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2></h2>
+        <a href="{{ url_for('listar_viagens') }}" class="btn btn-secondary">Voltar para Viagens</a>
+    </div>
+
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Motorista</th>
+                <th class="text-center">Total de Viagens</th>
+                <th class="text-end">Faturamento Total (R$)</th>
+                <th class="text-end">Comissão Total Motorista (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in resumo %}
+            <tr>
+                <td><strong>{{ item.nomeMotorista }}</strong></td>
+                <td class="text-center">{{ item.total_viagens }}</td>
+                <td class="text-end">R$ {{ "%.2f"|format(item.total_faturamento) }}</td>
+                <td class="text-end text-success font-weight-bold">
+                    <strong>R$ {{ "%.2f"|format(item.total_ganho) }}</strong>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center">Nenhuma viagem registrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-group-divider">
+            <tr class="table-active">
+                <td colspan="3" class="text-end"><strong>Total Geral de Comissões:</strong></td>
+                <td class="text-end text-success">
+                    <h4><strong>R$ {{ "%.2f"|format(total_geral) }}</strong></h4>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}

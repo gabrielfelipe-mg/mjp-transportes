@@ -1,0 +1,26 @@
+{% extends "padrao.html" %}
+{% block conteudo %}
+
+    <form method="post" action="/addUsuario">
+        {{ form.csrf_token() }}
+        <div class="mb-3">
+            {{ form.nome.label(class="form-label") }}
+            {{ form.nome(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.usuario.label(class="form-label") }}
+            {{ form.usuario(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.senha.label(class="form-label") }}
+            {{ form.senha(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.cadastrar(class="btn btn-primary") }}
+            <a href="{{ url_for('listar_viagens') }}" class="btn btn-secondary">Voltar para Viagens</a>
+        </div>
+    </form>
+
+
+
+{% endblock %}
