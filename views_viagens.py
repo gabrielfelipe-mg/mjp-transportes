@@ -1,8 +1,9 @@
 from flask import render_template, request, redirect, session, flash, url_for
 from sqlalchemy import func
 from definicoes import FormularioViagens
-from models import  Caminhao
 from principal import db, app
+from models import  Caminhao
+
 
 @app.route('/')
 def listar_viagens():

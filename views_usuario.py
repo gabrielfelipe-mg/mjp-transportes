@@ -11,17 +11,18 @@ def login():
 
 @app.route('/autenticar', methods=['POST',])
 def autenticar():
-    from models import Usuario
-    form = FormularioUsuario(request.form)
-    usuario = Usuario.query.filter_by(login_usuario= form.login.data).first()
-    senha = check_password_hash(usuario.senha, form.senha.data)
-    if usuario and senha:
-        session['usuario_logado'] = usuario.login_usuario
-        flash(f"Bem vindo de volta {usuario.login_usuario}!")
-        return redirect(url_for('listar_viagens'))
-    else:
-        flash("Usuário ou senha incorretos.")
-        return redirect(url_for('login'))
+  from models import Usuario
+
+  form = FormularioUsuario(request.form)
+  usuario = Usuario.query.filter_by(login_usuario=form.login.data).first()
+
+  if usuario and check_password_hash(usuario.senha, form.senha.data):
+    session['usuario_logado'] = usuario.login_usuario
+    flash(f'Bem vindo de volta {usuario.login_usuario}!')
+    return redirect(url_for('listar_viagens'))
+  else:
+    flash('Usuário ou senha incorretos.')
+    return redirect(url_for('login'))
 
 
 @app.route('/cadastroUsuario')
