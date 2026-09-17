@@ -7,6 +7,44 @@
         <a href="{{ url_for('listar_viagens') }}" class="btn btn-secondary">Voltar para Viagens</a>
     </div>
 
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('relatorio_ganhos') }}" class="row g-3 align-items-end">
+
+                <div class="col-md-3">
+                    <label for="quinzena" class="form-label font-weight-bold">Quinzena</label>
+                    <select name="quinzena" id="quinzena" class="form-select">
+                        <option value="1" {% if quinzena_selecionada == 1 %}selected{% endif %}>1ª Quinzena (01 a 15)</option>
+                        <option value="2" {% if quinzena_selecionada == 2 %}selected{% endif %}>2ª Quinzena (16 ao fim)</option>
+                        <option value="todas" {% if quinzena_selecionada == 'todas' %}selected{% endif %}>Mês Completo</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="mes" class="form-label font-weight-bold">Mês</label>
+                    <select name="mes" id="mes" class="form-select">
+                        {% set meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'] %}
+                        {% for num in range(1, 13) %}
+                            <option value="{{ num }}" {% if mes_selecionado == num %}selected{% endif %}>
+                                {{ meses[num - 1] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="ano" class="form-label font-weight-bold">Ano</label>
+                    <input type="number" name="ano" id="ano" class="form-control" value="{{ ano_selecionado }}">
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
     <table class="table table-striped table-hover align-middle">
         <thead class="table-dark">
             <tr>
@@ -21,14 +59,14 @@
             <tr>
                 <td><strong>{{ item.nomeMotorista }}</strong></td>
                 <td class="text-center">{{ item.total_viagens }}</td>
-                <td class="text-end">R$ {{ "%.2f"|format(item.total_faturamento) }}</td>
+                <td class="text-end">R$ {{ "%.2f"|format(item.total_faturamento or 0) }}</td>
                 <td class="text-end text-success font-weight-bold">
-                    <strong>R$ {{ "%.2f"|format(item.total_ganho) }}</strong>
+                    <strong>R$ {{ "%.2f"|format(item.total_ganho or 0) }}</strong>
                 </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="4" class="text-center">Nenhuma viagem registrada.</td>
+                <td colspan="4" class="text-center">Nenhuma viagem registrada no período selecionado.</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -36,7 +74,7 @@
             <tr class="table-active">
                 <td colspan="3" class="text-end"><strong>Total Geral de Comissões:</strong></td>
                 <td class="text-end text-success">
-                    <h4><strong>R$ {{ "%.2f"|format(total_geral) }}</strong></h4>
+                    <h4><strong>R$ {{ "%.2f"|format(total_geral or 0) }}</strong></h4>
                 </td>
             </tr>
         </tfoot>

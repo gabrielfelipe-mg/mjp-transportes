@@ -15,6 +15,7 @@ csrf = CSRFProtect(app)
 from views_viagens import *
 from views_usuario import *
 from views_financeiro import *
+from views_relatorio_ganhos import *
 
 if __name__ == '__main__':
     app.run(debug=True)

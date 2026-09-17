@@ -73,23 +73,6 @@ def atualizar_viagens():
     flash("Viagem atualizada com sucesso!")
     return redirect(url_for('listar_viagens'))
 
-@app.route('/relatorio-ganhos')
-def relatorio_ganhos():
-    if not session.get('usuario_logado'):
-        return redirect(url_for('login'))
-    resumo_ganhos = db.session.query(
-        Caminhao.nomeMotorista,
-        func.sum(Caminhao.ganhoMotorista).label('total_ganho'),
-        func.sum(Caminhao.valorViagem).label('total_faturamento'),
-        func.count(Caminhao.id).label('total_viagens')
-    ).group_by(Caminhao.nomeMotorista).order_by(Caminhao.nomeMotorista).all()
-    total_geral_ganhos = sum(row.total_ganho or 0 for row in resumo_ganhos)
-    return render_template(
-        'relatorio_ganhos.html',
-        titulo="Relatório de Ganhos dos Motoristas",
-        resumo=resumo_ganhos,
-        total_geral=total_geral_ganhos
-    )
 
 @app.route('/excluir/<int:id_viagem>')
 def excluir_viagens(id_viagem):
