@@ -2,51 +2,126 @@
 
 {% block conteudo %}
 
-<table class="table table-hover">
-<thead class="table-dark">
-    <tr>
-        <th>Data da Viagem</th>
-        <th>Manifesto</th>
-        <th>Placa</th>
-        <th>Nome do Motorista</th>
-        <th>Cidade</th>
-        <th>Número da Loja</th>
-        <th>Valor da Viagem (R$)</th>
-        <th>Ganho do Motorista (R$)</th>
-        <th>Ações</th>
-    </tr>
-</thead>
+<style>
+    @media print {
+        /* Esconde botões, paginação, menus e ações na hora de imprimir/salvar PDF */
+        .no-print, .btn, .pagination, nav, footer, td:last-child, th:last-child {
+            display: none !important;
+        }
+        body {
+            background: #fff !important;
+            font-size: 12pt;
+        }
+        .container {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+        }
+        .table th, .table td {
+            border: 1px solid #dee2e6 !important;
+            padding: 6px !important;
+        }
+    }
+</style>
 
-<tbody>
-    {% for viagem in viagens %}
-    <tr>
-        <td>{{ viagem.data_viagem }}</td>
-        <td>{{ viagem.manifesto }}</td>
-        <td>{{ viagem.placa }}</td>
-        <td>{{ viagem.nomeMotorista }}</td>
-        <td>{{ viagem.cidade }}</td>
-        <td>{{ viagem.numeroLoja }}</td>
-        <td>{{ viagem.valorViagem }}</td>
-        <td>{{ viagem.ganhoMotorista }}</td>
-        <td>
-            <label>
-                <a href="{{ url_for('editar_viagens',id_viagem=viagem.id) }}" class="text-body-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-    </svg></a>
-            </label>
-            <label>
-                <a href="{{ url_for('excluir_viagens', id_viagem=viagem.id) }}" class="text-danger" onclick="return confirm('Tem certeza que deseja excluir a viagem do manifesto {{ viagem.manifesto }}?');"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-</svg></a>
-             </label>
+<div class="container mt-4">
 
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
-</table>
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <h2></h2>
+        <div>
+
+            <button onclick="window.print()" class="btn btn-outline-danger me-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf me-1" viewBox="0 0 16 16">
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                    <path d="M4.603 12.087a.8.8 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.022.208-.248.553-.356.93-.356.55 0 1.018.23 1.488.583.333.25.688.582 1.066.97.234.241.48.5.733.774.225-.333.453-.68.677-1.028a11 11 0 0 0 1.01-1.921 1.8 1.8 0 0 1 .533-.67c.211-.16.48-.22.74-.188.275.034.51.18.66.425.153.25.178.56.068.835a2 2 0 0 1-.58.74 11.5 11.5 0 0 1-1.95 1.56 12 12 0 0 1-.77 1.378c-.28.423-.553.82-.823 1.18-.328.435-.67.842-1.025 1.22-.383.407-.783.77-1.196 1.082a2.3 2.3 0 0 1-.954.436.8.8 0 0 1-.74-.234c-.2-.204-.275-.483-.222-.76.054-.28.216-.53.454-.726.312-.257.72-.447 1.18-.557.373-.09.77-.12 1.17-.12.42 0 .84.032 1.25.093.284-.33.568-.68.847-1.045-.25-.286-.492-.558-.727-.812a15 15 0 0 1-1.12-1.34c-.4-.52-.75-1.05-1.05-1.58"/>
+                </svg> Standard PDF / Imprimir
+            </button>
+        </div>
+    </div>
+
+
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Data da Viagem</th>
+                <th>Manifesto</th>
+                <th>Placa</th>
+                <th>Nome do Motorista</th>
+                <th>Cidade</th>
+                <th>Número da Loja</th>
+                <th>Valor da Viagem (R$)</th>
+                <th>Ganho do Motorista (R$)</th>
+                <th class="no-print">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for viagem in viagens.items %}
+            <tr>
+                <td>{{ viagem.data_viagem.strftime('%d/%m/%Y') if viagem.data_viagem.strftime else viagem.data_viagem }}</td>
+                <td>{{ viagem.manifesto }}</td>
+                <td>{{ viagem.placa }}</td>
+                <td>{{ viagem.nomeMotorista }}</td>
+                <td>{{ viagem.cidade }}</td>
+                <td>{{ viagem.numeroLoja }}</td>
+                <td>R$ {{ "%.2f"|format(viagem.valorViagem or 0) }}</td>
+                <td>R$ {{ "%.2f"|format(viagem.ganhoMotorista or 0) }}</td>
+                <td class="no-print">
+                    <a href="{{ url_for('editar_viagens', id_viagem=viagem.id) }}" class="text-body-secondary me-2" title="Editar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('excluir_viagens', id_viagem=viagem.id) }}" class="text-danger" onclick="return confirm('Tem certeza que deseja excluir a viagem do manifesto {{ viagem.manifesto }}?');" title="Excluir">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                        </svg>
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="9" class="text-center">Nenhuma viagem encontrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if viagens.pages > 1 %}
+    <nav class="d-flex justify-content-between align-items-center mt-4 no-print">
+        <small class="text-muted">
+            Exibindo página {{ viagens.page }} de {{ viagens.pages }} (Total: {{ viagens.total }} registros)
+        </small>
+
+        <ul class="pagination mb-0">
+
+            <li class="page-item {% if not viagens.has_prev %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('listar_viagens', page=viagens.prev_num) }}">Anterior</a>
+            </li>
+
+
+            {% for page_num in viagens.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == viagens.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('listar_viagens', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            <li class="page-item {% if not viagens.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('listar_viagens', page=viagens.next_num) }}">Próximo</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
 {% endblock %}
-
 

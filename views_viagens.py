@@ -1,16 +1,25 @@
 from flask import render_template, request, redirect, session, flash, url_for
-from sqlalchemy import func
 from definicoes import FormularioViagens
 from principal import db, app
 from models import  Caminhao
 
 
-@app.route('/')
+@app.route("/")
 def listar_viagens():
-    if 'usuario_logado' not in session or session ['usuario_logado'] is None:
-        return redirect(url_for('login'))
-    lista = Caminhao.query.order_by(Caminhao.id)
-    return render_template('lista_viagens.html', titulo='Viagens Cadastradas', viagens=lista)
+    if "usuario_logado" not in session or session["usuario_logado"] is None:
+        return redirect(url_for("login"))
+
+    page = request.args.get("page", 1, type=int)
+
+    per_page = 10
+
+    lista = Caminhao.query.order_by(Caminhao.id.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+
+    return render_template(
+        "lista_viagens.html", titulo="Viagens Cadastradas", viagens=lista
+    )
 
 @app.route('/cadastro')
 def cadastro_viagens():

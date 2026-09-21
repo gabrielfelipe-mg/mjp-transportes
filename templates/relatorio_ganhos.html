@@ -4,7 +4,6 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2></h2>
-        <a href="{{ url_for('listar_viagens') }}" class="btn btn-secondary">Voltar para Viagens</a>
     </div>
 
     <div class="card mb-4 shadow-sm">
@@ -71,10 +70,14 @@
             {% endfor %}
         </tbody>
         <tfoot class="table-group-divider">
-            <tr class="table-active">
-                <td colspan="3" class="text-end"><strong>Total Geral de Comissões:</strong></td>
+            <tr class="table-active align-middle">
+                <td class="text-end"><strong>Totais Gerais do Período:</strong></td>
+                <td class="text-center"><strong>{{ total_viagens_geral or 0 }} viagens</strong></td>
+                <td class="text-end text-primary">
+                    <h5><strong>R$ {{ "%.2f"|format(total_faturamento_geral or 0) }}</strong></h5>
+                </td>
                 <td class="text-end text-success">
-                    <h4><strong>R$ {{ "%.2f"|format(total_geral or 0) }}</strong></h4>
+                    <h5><strong>R$ {{ "%.2f"|format(total_geral or 0) }}</strong></h5>
                 </td>
             </tr>
         </tfoot>
