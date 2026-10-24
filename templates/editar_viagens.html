@@ -1,0 +1,50 @@
+{% extends "padrao.html" %}
+
+{% block conteudo %}
+
+    <form method="post" action="{{ url_for('atualizar_viagens') }}">
+
+        <fieldset>
+
+            {{ viagem.csrf_token() }}
+
+            <input type="hidden" name="txtId" value="{{ id_viagem }}">
+
+            <div class="mb-3">
+                {{ viagem.manifesto.label(class="form-label") }}
+                {{ viagem.manifesto(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ viagem.placa.label(class="form-label") }}
+                {{ viagem.placa(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ viagem.nome.label(class="form-label") }}
+                {{ viagem.nome(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ viagem.cidade.label(class="form-label") }}
+                {{ viagem.cidade(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ viagem.loja.label(class="form-label") }}
+                {{ viagem.loja(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ viagem.valorViagem.label(class="form-label") }}
+                {{ viagem.valorViagem(class="form-control") }}
+            </div>
+
+            <!-- ADICIONE ESTE BLOCO PARA A DATA -->
+            <div class="mb-3">
+                {{ viagem.data_viagem.label(class="form-label") }}
+                {{ viagem.data_viagem(class="form-control", type="date") }}
+            </div>
+
+            <div class="mb-3">
+                {{ viagem.cadastrar(class="btn btn-primary", value="Salvar Alterações") }}
+                <a href="{{ url_for('listar_viagens') }}" class="btn btn-secondary">Voltar para Viagens</a>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

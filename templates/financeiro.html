@@ -1,0 +1,257 @@
+{% extends "padrao.html" %}
+
+{% block conteudo %}
+
+<style>
+    /* REGRAS EXCLUSIVAS PARA IMPRESSÃO / SALVAR EM PDF */
+    @media print {
+        /* 1. Oculta o cabeçalho/rodapé nativo do navegador (remover URL, data e título da página) */
+        @page {
+            margin: 0;
+            size: auto;
+        }
+
+        /* 2. Reseta margens e define o espaçamento interno do conteúdo da página */
+        body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            font-size: 9pt;
+            margin: 0 !important;
+            padding: 1.5cm 1cm !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* 3. Oculta elementos de interface e navegação */
+        nav,
+        .navbar,
+        header,
+        footer,
+        form,
+        button,
+        .btn,
+        .modal,
+        .modal-backdrop,
+        .card-body form,
+        .card.p-4,
+        .no-print {
+            display: none !important;
+        }
+
+        /* 4. Ajustes de layout para a tabela ocupar 100% da folha */
+        .container, .container-fluid {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .table-responsive, .card-body {
+            overflow: visible !important;
+            padding: 0 !important;
+        }
+
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        th, td {
+            padding: 5px 6px !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+        }
+
+        .badge {
+            border: 1px solid #000 !important;
+            color: #000 !important;
+            background-color: transparent !important;
+        }
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>💰 Conciliação e Gestão Financeira</h2>
+        <h2 class="d-none d-print-block fw-bold text-primary">MJP TRANSPORTES — Extrato Financeiro</h2>
+    </div>
+
+    <div class="card p-4 mb-4 shadow-sm no-print">
+        <h5 class="card-title mb-3">Importar Extrato (.OFX)</h5>
+        <form action="{{ url_for('financeiro') }}" method="POST" enctype="multipart/form-data" class="row g-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="col-md-5">
+                <label class="form-label">Selecione o arquivo .OFX</label>
+                <input type="file" name="arquivo_ofx" class="form-control" accept=".ofx" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Conta de Origem</label>
+                <select name="conta_origem" class="form-select">
+                    <option value="Itaú CC">Itaú CC</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Caixa Interno">Caixa Interno</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Processar Extrato</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+        <div>
+            <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalNovoLancamento">
+                ➕ Novo Lançamento
+            </button>
+
+            <a href="{{ url_for('exportar_financeiro') }}" class="btn btn-success me-2">
+                📥 Exportar Excel (.xlsx)
+            </a>
+
+            <button type="button" onclick="window.print()" class="btn btn-outline-secondary">
+                🖨️ Imprimir / Salvar PDF
+            </button>
+        </div>
+
+        <form action="{{ url_for('limpar_financeiro') }}" method="POST" onsubmit="return confirm('Tem certeza que deseja EXCLUIR TODOS os lançamentos? Esta ação não pode ser desfeita.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn btn-outline-danger">
+                🗑️ Excluir Tudo
+            </button>
+        </form>
+    </div>
+
+    <div class="modal fade no-print" id="modalNovoLancamento" tabindex="-1" aria-labelledby="modalNovoLancamentoLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalNovoLancamentoLabel">Adicionar Lançamento Manual</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form action="{{ url_for('novo_lancamento_manual') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Data</label>
+                    <input type="date" name="data_movimentacao" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo</label>
+                    <select name="tipo" class="form-select" required>
+                        <option value="PAGAMENTO">PAGAMENTO</option>
+                        <option value="RECEBIMENTO">RECEBIMENTO</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Favorecido / Cliente / Fornecedor</label>
+                    <input type="text" name="favorecido" class="form-control" placeholder="Ex: Posto Shell / Cliente X" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">CPF / CNPJ (Opcional)</label>
+                    <input type="text" name="cpf_cnpj" class="form-control" placeholder="00.000.000/0001-00">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" name="descricao" class="form-control" placeholder="Ex: Abastecimento Frota" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Valor (R$)</label>
+                    <input type="text" name="valor" class="form-control" placeholder="150,00" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Conta Origem</label>
+                    <select name="conta_origem" class="form-select">
+                        <option value="Itaú CC">Itaú CC</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Caixa Interno">Caixa Interno</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-success">Salvar Lançamento</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Data</th>
+                        <th>Nº Doc</th>
+                        <th>Favorecido</th>
+                        <th>CPF / CNPJ</th>
+                        <th>Descrição</th>
+                        <th>Conta</th>
+                        <th>Tipo</th>
+                        <th>Valor (R$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if lancamentos %}
+                        {% for item in lancamentos %}
+                        <tr>
+                            <td>
+                                {% if item.data_movimentacao and item.data_movimentacao.strftime is defined %}
+                                    {{ item.data_movimentacao.strftime('%d/%m/%Y') }}
+                                {% else %}
+                                    {{ item.data_movimentacao or '-' }}
+                                {% endif %}
+                            </td>
+                            <td>{{ item.numero_documento or 'S/N' }}</td>
+                            <td>{{ item.favorecido or '-' }}</td>
+                            <td>
+                                {% if item.cpf_cnpj %}
+                                    <span class="badge bg-light text-dark border">{{ item.cpf_cnpj }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.descricao or '-' }}</td>
+                            <td>{{ item.conta_origem or '-' }}</td>
+                            <td>
+                                {% if item.tipo == 'RECEBIMENTO' %}
+                                    <span class="badge bg-success">RECEBIMENTO</span>
+                                {% else %}
+                                    <span class="badge bg-danger">PAGAMENTO</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.valor is not none %}
+                                    R$ {{ "%.2f"|format(item.valor) }}
+                                {% else %}
+                                    R$ 0,00
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">Nenhum lançamento encontrado. Importe um arquivo .OFX ou cadastre um lançamento manual.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

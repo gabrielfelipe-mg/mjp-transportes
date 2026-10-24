@@ -1,0 +1,43 @@
+{% extends "padrao.html" %}
+
+{% block conteudo %}
+
+    <form method="post" action="/adicionar">
+
+        <fieldset>
+
+            {{ form.csrf_token() }}
+
+
+            <div class="mb-3">
+                {{ form.manifesto.label(class="form-label") }}
+                {{ form.manifesto(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.placa.label(class="form-label") }}
+                {{ form.placa(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.nome.label(class="form-label") }}
+                {{ form.nome(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.cidade.label(class="form-label") }}
+                {{ form.cidade(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.loja.label(class="form-label") }}
+                {{ form.loja(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.valorViagem.label(class="form-label") }}
+                {{ form.valorViagem(class="form-control") }}
+            </div>
+            <div>
+                {{ form.cadastrar(class="btn btn-primary") }}
+                <a href="{{ url_for('listar_viagens') }}" class="btn btn-secondary">Voltar para Viagens</a>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}
+
